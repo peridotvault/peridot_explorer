@@ -3,12 +3,12 @@ import { getTokenBlock } from "@/services/TokenService";
 import { Principal } from "@dfinity/principal";
 import { RawBlock, ICRC3Value } from "@/interfaces/Token";
 
-interface Props {
-  params: {
+type Props = {
+  params: Promise<{
     canisterId: string;
     blockId: string;
-  };
-}
+  }>;
+};
 
 function extractValue(value: ICRC3Value): any {
   if (value.Int !== undefined) return value.Int.toString();
@@ -91,7 +91,7 @@ function BlockViewer({ block }: { block: RawBlock }) {
 }
 
 export default async function TransactionPage({ params }: Props) {
-  const { canisterId, blockId } = params;
+  const { canisterId, blockId } = await params;
   let blockData: RawBlock | null = null;
 
   try {
