@@ -56,21 +56,42 @@ function BlockViewer({ block }: { block: RawBlock }) {
   const tx = getField(value, "tx")?.Map;
   const ts = getField(value, "ts")?.Nat;
 
-  const op = tx ? extractValue(getField({ Map: tx }, "op")!) : null;
+  const opRaw = tx ? extractValue(getField({ Map: tx }, "op")!) : null;
+  const op = opRaw === "xfer" ? "transfer" : opRaw === "xmint" ? "mint" : opRaw;
   const amount = tx ? getField({ Map: tx }, "amt")?.Nat : null;
   const toBlob = tx ? getField({ Map: tx }, "to")?.Array?.[0]?.Blob : undefined;
   const to = toBlob ? decodeBlob(toBlob) : "-";
+  const fromBlob = tx
+    ? getField({ Map: tx }, "from")?.Array?.[0]?.Blob
+    : undefined;
+  const from = fromBlob ? decodeBlob(fromBlob) : "-";
+  const memoBlob = tx ? getField({ Map: tx }, "memo")?.Blob : undefined;
+  const memo = memoBlob ? decodeBlob(memoBlob) : "-";
+  const fee = tx ? getField({ Map: tx }, "fee")?.Nat : null;
 
   return (
     <div className="rounded-lg shadow mt-6 w-full">
-      <InfoRow label="Type" value={op || "-"} />
+      <InfoRow label="Block Id" value={block.id.toString()} />
+      <InfoRow
+        label="Type"
+        value={
+          op ? (
+            <div>
+              <span className="bg-green-800 px-4 py-1 rounded-full capitalize">
+                {op}
+              </span>
+            </div>
+          ) : (
+            "-"
+          )
+        }
+      />
       <InfoRow label="Status" value="-" />
-      <InfoRow label="Index" value={block.id.toString()} />
       <InfoRow
         label="Timestamp"
         value={ts ? new Date(Number(ts) / 1_000_000).toUTCString() : "-"}
       />
-      <InfoRow label="From" value="-" />
+      <InfoRow label="From" value={from} />
       <InfoRow label="To" value={to} />
       <InfoRow
         label="Amount"
@@ -85,8 +106,20 @@ function BlockViewer({ block }: { block: RawBlock }) {
           )
         }
       />
-      <InfoRow label="Fee" value="-" />
-      <InfoRow label="Memo" value="-" />
+      <InfoRow
+        label="Fee"
+        value={
+          fee ? (
+            <div className="flex items-center gap-1">
+              <span className="w-4 h-4 rounded-full bg-gray-400 inline-block" />
+              {formatAmount(fee)}
+            </div>
+          ) : (
+            "-"
+          )
+        }
+      />
+      <InfoRow label="Memo" value={memo} />
     </div>
   );
 }
