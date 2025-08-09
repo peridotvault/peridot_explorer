@@ -1,3 +1,4 @@
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const tokenIdlFactory = ({ IDL }: { IDL: any }) => {
   // Account type
   const Account = IDL.Record({

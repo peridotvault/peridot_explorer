@@ -10,6 +10,7 @@ type Props = {
   }>;
 };
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function extractValue(value: ICRC3Value): any {
   if (value.Int !== undefined) return value.Int.toString();
   if (value.Nat !== undefined) return value.Nat.toString();
