@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export default function Home() {
   return (
     <main className="flex justify-center">
@@ -6,10 +8,10 @@ export default function Home() {
           className={`transition-all duration-300 rounded-2xl flex justify-center border backdrop-blur-lg border-white/10 `}
         >
           <div className="w-full px-8 py-6 flex items-center justify-between">
-            <a href="/#" className="text-2xl">
+            <Link href="/#" className="text-2xl">
               <span className="font-bold">Peridot</span>
               <span>Vault</span>
-            </a>
+            </Link>
           </div>
         </header>
       </div>
