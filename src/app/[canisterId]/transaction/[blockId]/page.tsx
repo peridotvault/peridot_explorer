@@ -54,8 +54,9 @@ function InfoRow({ label, value }: { label: string; value: React.ReactNode }) {
 function BlockViewer({ block }: { block: RawBlock }) {
   const value = block.block;
   const tx = getField(value, "tx")?.Map;
-  const ts = getField(value, "ts")?.Nat;
+  console.log("testt : ", tx);
 
+  const ts = tx ? extractValue(getField({ Map: tx }, "ts")!) : null;
   const opRaw = tx ? extractValue(getField({ Map: tx }, "op")!) : null;
   const op = opRaw === "xfer" ? "transfer" : opRaw === "xmint" ? "mint" : opRaw;
   const amount = tx ? getField({ Map: tx }, "amt")?.Nat : null;
@@ -68,6 +69,7 @@ function BlockViewer({ block }: { block: RawBlock }) {
   const memoBlob = tx ? getField({ Map: tx }, "memo")?.Blob : undefined;
   const memo = memoBlob ? decodeBlob(memoBlob) : "-";
   const fee = tx ? getField({ Map: tx }, "fee")?.Nat : null;
+  console.log("fee : ", fee);
 
   return (
     <div className="rounded-lg shadow mt-6 w-full">
