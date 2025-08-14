@@ -12,6 +12,7 @@ type Props = {
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function extractValue(value: ICRC3Value): any {
+  if (!value || typeof value !== "object") return null;
   if (value.Int !== undefined) return value.Int.toString();
   if (value.Nat !== undefined) return value.Nat.toString();
   if (value.Text !== undefined) return value.Text;
