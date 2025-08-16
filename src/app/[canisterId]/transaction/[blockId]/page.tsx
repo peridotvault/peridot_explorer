@@ -41,6 +41,29 @@ function decodeBlob(blob: Uint8Array): string {
   }
 }
 
+function getTimestampNs(value: ICRC3Value): bigint | null {
+  const tx = getField(value, "tx")?.Map;
+
+  // Kandidat urutan prioritas:
+  const cands = [
+    tx && getField({ Map: tx }, "ts"),
+    getField(value, "ts"),
+    getField(value, "timestamp"),
+    tx && getField({ Map: tx }, "created_at_time"),
+    getField(value, "created_at_time"),
+  ].filter(Boolean) as ICRC3Value[];
+
+  for (const v of cands) {
+    if (v.Nat !== undefined) return v.Nat; // nat64 (ns)
+    if (v.Int !== undefined) return BigInt(v.Int); // int (ns)
+    if (v.Text !== undefined && /^\d+$/.test(v.Text)) {
+      // string angka
+      return BigInt(v.Text);
+    }
+  }
+  return null;
+}
+
 function InfoRow({ label, value }: { label: string; value: React.ReactNode }) {
   return (
     <div className="w-full grid grid-cols-4 gap-2 p-4 border-b border-white/10">
@@ -71,6 +94,7 @@ function BlockViewer({ block }: { block: RawBlock }) {
   const memo = memoBlob ? decodeBlob(memoBlob) : "-";
   const fee = tx ? getField({ Map: tx }, "fee")?.Nat : null;
   console.log("fee : ", fee);
+  const tsBig = getTimestampNs(value);
 
   return (
     <div className="rounded-lg shadow mt-6 w-full">
@@ -92,7 +116,7 @@ function BlockViewer({ block }: { block: RawBlock }) {
       <InfoRow label="Status" value="-" />
       <InfoRow
         label="Timestamp"
-        value={ts ? new Date(Number(ts) / 1_000_000).toUTCString() : "-"}
+        value={tsBig ? new Date(Number(tsBig) / 1_000_000).toUTCString() : "-"}
       />
       <InfoRow label="From" value={from} />
       <InfoRow label="To" value={to} />
